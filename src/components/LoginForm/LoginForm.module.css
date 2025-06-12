@@ -1,0 +1,14 @@
+.formContainer {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.error {
+    color: red;
+    font-size: 0.8rem;
+}

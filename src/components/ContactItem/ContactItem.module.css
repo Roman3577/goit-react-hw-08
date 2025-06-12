@@ -1,0 +1,14 @@
+/* ContactItem.module.css */
+.item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.button {
+    background: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+}
