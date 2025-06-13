@@ -12,28 +12,34 @@ import styles from './ContactsPage.module.css';
 
 export default function ContactsPage() {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
+  const contacts = useSelector(selectContacts) || []; // захист від null
   const isLoading = useSelector(selectContactsLoading);
-  const filter = useSelector(selectFilter);
+  const filter = useSelector(selectFilter) || ''; // захист від undefined
   const [modal, setModal] = useState({ show: false, id: null });
 
   useEffect(() => {
     dispatch(fetchContacts())
       .unwrap()
-      .catch(() => toast.error('Failed to fetch contacts'));
+      .catch(() => toast.error('Не вдалося отримати контакти'));
   }, [dispatch]);
 
   const handleAdd = e => {
     e.preventDefault();
-    const name = e.target.name.value;
-    const phone = e.target.phone.value;
+    const name = e.target.name.value.trim();
+    const phone = e.target.phone.value.trim();
+
+    if (!name || !phone) {
+      toast.error('Заповніть усі поля');
+      return;
+    }
+
     dispatch(addContact({ name, phone }))
       .unwrap()
       .then(() => {
-        toast.success('Contact added');
+        toast.success('Контакт додано');
         e.target.reset();
       })
-      .catch(() => toast.error('Failed to add'));
+      .catch(() => toast.error('Не вдалося додати контакт'));
   };
 
   const handleDelete = id => {
@@ -43,8 +49,8 @@ export default function ContactsPage() {
   const confirmDelete = () => {
     dispatch(deleteContact(modal.id))
       .unwrap()
-      .then(() => toast.success('Deleted'))
-      .catch(() => toast.error('Failed delete'));
+      .then(() => toast.success('Контакт видалено'))
+      .catch(() => toast.error('Помилка видалення'));
     setModal({ show: false, id: null });
   };
 
@@ -55,16 +61,16 @@ export default function ContactsPage() {
 
   return (
     <div className={styles.container}>
-      <h2>Contacts</h2>
+      <h2>Контакти</h2>
       <form onSubmit={handleAdd} className={styles.form}>
-        <input name="name" placeholder="Name" required />
-        <input name="phone" placeholder="Phone" required />
-        <button type="submit">Add</button>
+        <input name="name" placeholder="Імʼя" required />
+        <input name="phone" placeholder="Телефон" required />
+        <button type="submit">Додати</button>
       </form>
 
       <Filter value={filter} onChange={e => dispatch(setFilter(e.target.value))} />
 
-      {isLoading ? <p>Loading...</p> : (
+      {isLoading ? <p>Завантаження...</p> : (
         <ContactList items={filtered} onDelete={handleDelete} />
       )}
 
